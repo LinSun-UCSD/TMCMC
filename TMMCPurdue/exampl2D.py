@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-## lin Sun
+# lin Sun
+# email: lsun@ucsd.edu
 # Pick a starting point for your random walk
 x0 = np.zeros((2,))
 # Pick a standard deviation for your random walk
