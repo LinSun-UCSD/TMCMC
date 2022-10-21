@@ -9,30 +9,57 @@ import numpy as np
 import pickle
 from tmcmc_mod import pdfs
 from tmcmc_mod.tmcmc import run_tmcmc
+import os as os
+from h_measurement_eqn.h_measurement_eqn import h_measurement_eqn
+from h_measurement_eqn.ismember import ismember
+from h_measurement_eqn.normalize import normalize
+import matplotlib.pyplot as plt
 
 # choose 'multiprocessing' for local workstation or 'mpi' for supercomputer
 parallel_processing = 'multiprocessing'
 
 # measurement data:
-# eigen values of first mode
-data1 = np.array([0.3860, 0.3922, 0.4157, 0.3592, 0.3615])
-# eigen values of second mode
-data2 = np.array([2.3614, 2.5877, 2.7070, 2.3875, 2.7272])
-# eigen vector of first mode
-data3 = np.array([1.68245252, 1.71103903, 1.57876073, 1.58722342, 1.61878479])
+g = 9.81  # gravity acceleration
+# ground motion input
+GMinput = {
+    "totalStep": 1000,  # earthquake record stpes
+    "fs": 50,  # sampling rate
+    "filename": 'NORTHR_SYL090',  # the earthquake file to load
+    "path": os.getcwd() + "\\earthquake record"  # earthquake record folder
+}
+# Parameters to update
+ParameterInfo = {
+    "ParameterName": ["k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8"],  # stiffness at each floor
+    "TrueParameterValues": np.ones((8, 1), ) * 1e9,  # true parameters
+    "UpdateParameterIndex": []
+}
+k0 = 1e9
+UpdateParameterName = ["k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8"]
+ParameterInfo["UpdateParameterIndex"] = ismember(ParameterInfo["ParameterName"], UpdateParameterName)
+TrueUpdateParameterValues = ParameterInfo["TrueParameterValues"][:, 0]
+# compute the true response
+measure_vector = np.array([[0, 1, 2, 3, 4, 5, 6, 7]])  # take first floor and top floor acceleration as measurement
+TrueResponse = h_measurement_eqn(ParameterInfo["TrueParameterValues"], GMinput, 1, GMinput["totalStep"], measure_vector,
+                                 k0)
+TrueResponse, max = normalize(TrueResponse)
+NoisyTrueResponse = TrueResponse + np.random.randn(TrueResponse.shape[0], TrueResponse.shape[1]) * 0.01
 
 # number of particles (to approximate the posterior)
-Np = 500
+Np = 250
 
 # prior distribution of parameters
-k1 = pdfs.Uniform(lower=0.8, upper=2.2)
-k2 = pdfs.Uniform(lower=0.4, upper=1.2)
+prior_mean = np.array([[1.14, 1.32, 0.35, 0.95, 0.87, 1.235, 0.935, 0.85]])
+i = 0
+all_pars = [pdfs.TruncatedNormal(mu=prior_mean[0, i] * TrueUpdateParameterValues[i],
+                                 sig=0.3 * np.abs(prior_mean[0, i] * TrueUpdateParameterValues[i]), low=1, up=np.Inf)
+            for i in range(8)]
 
-# Required! a list of all parameter objects
-all_pars = [k1, k2]
+ny = 8
+RMS_measurementNoise = 1 / 100
+R = RMS_measurementNoise ** 2 * np.ones((1 * ny, 1))
 
 
-def log_likelihood(particle_num, s):
+def log_likelihood(particle_num, theta):
     """
     Required!
     log-likelihood function which is problem specific
@@ -51,15 +78,19 @@ def log_likelihood(particle_num, s):
         log-likelihood function value.
 
     """
-    sig1 = 0.0191
-    sig2 = 0.0809   # = 0.05*1.618
-    lambda1_s = (s[0]/2+s[1]) - np.sqrt(((s[0]/2+s[1])**2 - s[0]*s[1]))
-    phi12_s = (s[0]+s[1]-lambda1_s)/s[1]
+    # calculate the mean
+    theta.reshape(-1, 1)
+    y = h_measurement_eqn(theta, GMinput, 1, GMinput["t otalStep"], measure_vector, k0)
+    for i in range(y.shape[1]):
+        y[:, i] = y[:, i] / max[i]
+    N, Ny = y.shape
+    delta = NoisyTrueResponse - y
+    par_sigma_normalized = [0.01] * Ny
+    if y.shape != NoisyTrueResponse.shape:
+        return -np.Inf
 
-    # see slide 21
-    LL = (np.log((2*np.pi*sig1*sig2)**-5) +
-          (-0.5*(sig1**(-2))*sum((lambda1_s-data1)**2)) +
-          (-0.5*(sig2**-2)*sum((phi12_s-data3)**2)))
+    LL = -0.5 * N * Ny * np.log(2 * np.pi) - np.sum(N * np.log(par_sigma_normalized)) - np.sum(
+        0.5 * (np.power(par_sigma_normalized, -2)) * np.sum(delta ** 2, axis=0))
     return LL
 
 

@@ -1,5 +1,5 @@
 import numpy as np
-from get_mode_state_space import get_mode_state_space
+from .get_mode_state_space import get_mode_state_space
 
 
 # state space model:
