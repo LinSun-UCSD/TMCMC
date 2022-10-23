@@ -6,7 +6,6 @@ from .get_continuous_state_space import get_continuous_state_space
 from .get_response_state_space import get_response_state_space
 
 
-
 def h_measurement_eqn(parameter_SP, GMinput, StepUpdateSize, UpdateNum, measure_vector, k0):
     input_path = GMinput["path"]
     filename = GMinput["filename"]
@@ -28,7 +27,6 @@ def h_measurement_eqn(parameter_SP, GMinput, StepUpdateSize, UpdateNum, measure_
     # compute the response
 
     output_type = ["abs", "rel"]
-
 
     step = StepUpdateSize * UpdateNum
     t = np.arange(0, step, 1) / fs
