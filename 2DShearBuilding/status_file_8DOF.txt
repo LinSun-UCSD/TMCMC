@@ -561,3 +561,76 @@ next MCMC Nsteps = 5
 log_evidence till now = -123.26936024659993051955 
 --- Execution time: 1.09 mins --- 
 ======================== 
+stage number = 57 
+beta = 0.83985 
+ESS = 50 
+scalem = 0.54 
+acceptance rate = 0.49 
+adapted max MCMC steps = 5 
+next MCMC Nsteps = 5 
+log_evidence till now = -126.09787935927565172278 
+--- Execution time: 0.80 mins --- 
+======================== 
+stage number = 58 
+beta = 0.86761 
+ESS = 50 
+scalem = 0.55 
+acceptance rate = 0.51 
+adapted max MCMC steps = 5 
+next MCMC Nsteps = 5 
+log_evidence till now = -128.87149020685455980129 
+--- Execution time: 0.80 mins --- 
+======================== 
+stage number = 59 
+beta = 0.89415 
+ESS = 50 
+scalem = 0.57 
+acceptance rate = 0.50 
+adapted max MCMC steps = 5 
+next MCMC Nsteps = 5 
+log_evidence till now = -131.55302959743963242545 
+--- Execution time: 0.97 mins --- 
+======================== 
+stage number = 60 
+beta = 0.92574 
+ESS = 50 
+scalem = 0.55 
+acceptance rate = 0.48 
+adapted max MCMC steps = 5 
+next MCMC Nsteps = 5 
+log_evidence till now = -134.61782573873335877579 
+--- Execution time: 0.66 mins --- 
+======================== 
+stage number = 61 
+beta = 0.95275 
+ESS = 50 
+scalem = 0.53 
+acceptance rate = 0.50 
+adapted max MCMC steps = 5 
+next MCMC Nsteps = 5 
+log_evidence till now = -137.10174413105687563075 
+--- Execution time: 0.65 mins --- 
+======================== 
+stage number = 62 
+beta = 0.98267 
+ESS = 50 
+scalem = 0.56 
+acceptance rate = 0.49 
+adapted max MCMC steps = 5 
+next MCMC Nsteps = 5 
+log_evidence till now = -140.02379538605487141467 
+--- Execution time: 0.65 mins --- 
+======================== 
+stage number = 63 
+beta = 1.00000 
+ESS = 50 
+scalem = 0.54 
+acceptance rate = 0.48 
+adapted max MCMC steps = 5 
+next MCMC Nsteps = 5 
+log_evidence till now = -141.92677174388148841899 
+--- Execution time: 0.81 mins --- 
+======================== 
+--- Execution time: 50.67 mins --- 
+log_evidence = -141.92677174388148841899 
+closing multiprocessing 
