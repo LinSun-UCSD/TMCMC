@@ -13,7 +13,6 @@ labelsName: list of string to name xlabel and ylabel
 
 
 def plotScatterTwoTheta(pickleFileName, trueValues, stages, labelsName):
-
     with open(pickleFileName, 'rb') as handle1:
         mytrace = pickle.load(handle1)
 
