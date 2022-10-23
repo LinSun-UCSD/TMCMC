@@ -1,11 +1,12 @@
 """
-@author: Mukesh K. Ramancha
+@author: Lin Sun, Mukesh K. Ramancha
 
 transitional Markov chain Monte Carlo
 a.k.a. sequential Monte Carlo
 """
 import numpy as np
 import time
+import os
 # import resampling
 
 
@@ -272,7 +273,8 @@ def run_tmcmc(N, all_pars, log_likelihood, parallel_processing,
     comm: if parallel_processing is mpi
 
     """
-
+    if os.path.isfile(status_file_name):
+        os.remove(status_file_name)
     # side note: make all_pars as ordered dict in the future
     # Initialize (beta, effective sample size)
     beta = 0
@@ -283,7 +285,7 @@ def run_tmcmc(N, all_pars, log_likelihood, parallel_processing,
 
     # Initialize other TMCMC variables
     Nm_steps = Nm_steps_max
-    parallelize_MCMC = False
+    parallelize_MCMC = True
     Adap_calc_Nsteps = 'yes'    # yes or no
     Adap_scale_cov = 'yes'      # yes or no
     scalem = 1                  # cov scale factor

@@ -56,7 +56,8 @@ all_pars = [pdfs.TruncatedNormal(mu=prior_mean[0, i] * TrueUpdateParameterValues
 
 # include measurement noise
 ny = 8
-all_pars.append([pdfs.HalfNormal(sig = 0.20) for i in range(ny)])
+# for i in range(ny):
+#     all_pars.append(pdfs.HalfNormal(sig=0.01))
 
 # RMS_measurementNoise = 1 / 100
 # R = RMS_measurementNoise ** 2 * np.ones((1 * ny, 1))
@@ -83,15 +84,15 @@ def log_likelihood(particle_num, theta):
     """
     # calculate the mean
     theta.reshape(-1, 1)
-    y = h_measurement_eqn(theta, GMinput, 1, GMinput["totalStep"], measure_vector, k0)
+    y = h_measurement_eqn(theta[0:8], GMinput, 1, GMinput["totalStep"], measure_vector, k0)
     for i in range(y.shape[1]):
         y[:, i] = y[:, i] / max[i]
     N, Ny = y.shape
     delta = NoisyTrueResponse - y
-    # par_sigma_normalized = [0.01] * Ny
+    par_sigma_normalized = [0.01] * Ny
     if y.shape != NoisyTrueResponse.shape:
         return -np.Inf
-
+    # par_sigma_normalized = theta[8:len(all_pars)].tolist()
     LL = -0.5 * N * Ny * np.log(2 * np.pi) - np.sum(N * np.log(par_sigma_normalized)) - np.sum(
         0.5 * (np.power(par_sigma_normalized, -2)) * np.sum(delta ** 2, axis=0))
     return LL
