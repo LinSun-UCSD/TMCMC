@@ -12,7 +12,7 @@ labelsName: list of string to name xlabel and ylabel
 """
 
 
-def plotScatterTwoTheta(pickleFileName, trueValues, stages, labelsName):
+def plotScatterTwoTheta(pickleFileName, trueValues, stages, labelsName, thetaChoice):
     with open(pickleFileName, 'rb') as handle1:
         mytrace = pickle.load(handle1)
 
@@ -27,9 +27,9 @@ def plotScatterTwoTheta(pickleFileName, trueValues, stages, labelsName):
             betap = 0
         else:
             betap = mytrace[i - 1][-2]
-        plt.scatter(Sm[:, 1], Sm[:, 0], s=(Wm / sum(Wm)) * 1000, zorder=2)
-        plt.xlim([0.8 * (trueValues[1]), 1.2 * (trueValues[1])])
-        plt.ylim([0.8 * (trueValues[0]), 1.2 * (trueValues[0])])
+        plt.scatter(Sm[:, thetaChoice[0]], Sm[:, thetaChoice[1]], s=(Wm / sum(Wm)) * 1000, zorder=2)
+        plt.xlim([0.01 * (trueValues[1]), 2.2 * (trueValues[1])])
+        plt.ylim([0.01 * (trueValues[0]), 2.2 * (trueValues[0])])
         plt.title(r'$ \beta_{%d} $ = %.5f' % (i, betap), fontsize=16)
         plt.ylabel(labelsName[0], fontsize=16)
         plt.xlabel(labelsName[1], fontsize=16)

@@ -21,7 +21,7 @@ trueValues = [1e9, 1e9]
 stages = np.arange(0, 64)
 thetaName = np.array(("k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8"))
 pickleFileName ='mytrace.pickle'
-# plotScatterTwoTheta(pickleFileName, trueValues, stages, labelsName=["k1", "k2"])
+plotScatterTwoTheta(pickleFileName, trueValues, stages, labelsName=["k1", "k2"])
 
 # # model evidence
 # evidence = 1

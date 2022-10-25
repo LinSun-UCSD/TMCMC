@@ -1,39 +1,25 @@
 import numpy as np
 from .get_mass import get_mass
 from .get_stiffness import get_stiffness
-from .get_classical_damping import get_classical_damping
-from .get_continuous_state_space import get_continuous_state_space
-from .get_response_state_space import get_response_state_space
+from .modalAnalaysis import modalAnalaysis
 
 
-def h_measurement_eqn(parameter_SP, GMinput, StepUpdateSize, UpdateNum, measure_vector, k0):
-    input_path = GMinput["path"]
-    filename = GMinput["filename"]
-    fs = GMinput["fs"]
+def h_measurement_eqn(parameter_SP, measure_vector, k0, m0):
     # input K, M and C
-    DOF = 8
-    m0 = 625000
+    DOF = len(parameter_SP)
+
     M_global = get_mass(m0, DOF)
-    c0 = 400000
-    damping = {
-        "mode": np.array([1, 3]),
-        "ratio": np.array([0.05, 0.05])
-    }
-    B = np.ones((DOF, 1))
-    # load the input
-    temp = np.loadtxt(input_path + "/" + filename + ".txt", dtype=float)
-    a = temp[2:temp.shape[0]] * 9.81
-
-    # compute the response
-
-    output_type = ["abs", "rel"]
-
-    step = StepUpdateSize * UpdateNum
-    t = np.arange(0, step, 1) / fs
-    K_global = get_stiffness(parameter_SP, DOF, measure_vector, k0)
-    C_global, _, _, _ = get_classical_damping(K_global, M_global, damping, "no")
-    Ac, Bc, Cc, Dc = get_continuous_state_space(K_global, M_global, C_global, B, output_type[0])
-    temp, _, _, _, _, _ = get_response_state_space(Ac, Bc, Cc, Dc, a[0:step], t)
-    temp = temp[measure_vector, :]
-    response = np.transpose(temp[0])
-    return response
+    K_global = get_stiffness(parameter_SP, DOF, k0)
+    values, vectors = modalAnalaysis(K_global, M_global)
+    values = values.reshape((1, len(values)))
+    y = np.zeros((vectors.shape[0] + values.shape[0], vectors.shape[1]))
+    y[0, :] = values[0, :]
+    # max eigen
+    maxEigen = y[0,-1]
+    # y[0,:] = y[0,:]/maxEigen
+    y[1:y.shape[0], :] = vectors
+    maxEigenVec = np.zeros((y.shape[1],))
+    for i in range(y.shape[1]):
+        maxEigenVec[i] = np.linalg.norm(y[1:y.shape[0], i])
+        # y[1:y.shape[0], i] = y[1:y.shape[0], i]/maxEigenVec[i]
+    return y, maxEigen, maxEigenVec

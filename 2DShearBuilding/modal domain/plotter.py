@@ -16,12 +16,13 @@ import os
 with open('mytrace.pickle', 'rb') as handle1:
     mytrace = pickle.load(handle1)
 # mytrace stage m:
-# samples, likelihood, weights, next stage ESS, next stage beta, resampled samples
-trueValues = [1e9, 1e9]
-stages = np.arange(0, 64)
+# samples, likelihood, weights, next stage ESS, next stage beta, resampled sampletrueValues = [1e9, 1e9]
+stages = np.arange(0, len(mytrace))
 thetaName = np.array(("k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8"))
 pickleFileName ='mytrace.pickle'
-# plotScatterTwoTheta(pickleFileName, trueValues, stages, labelsName=["k1", "k2"])
+trueValues = np.ones((8, 1), )*1e9
+thetaChoice = [0, 1]
+plotScatterTwoTheta(pickleFileName, trueValues, stages, ["k1", "k2"], thetaChoice)
 
 # # model evidence
 # evidence = 1
@@ -35,21 +36,16 @@ thetaChoice = np.array((1,2,3))
 thetaName = thetaName[thetaChoice]
 # plotPairGrid(pickleFileName, stages, thetaChoice, thetaName)
 #
-# mean, std, cov = plotMeanSTD(pickleFileName, np.array((1,2)), stages, trueValues)
+mean, std, cov = plotMeanSTD(pickleFileName, np.arange(0,8), stages, trueValues)
 #
 
 # plot RRMS
-GMinput = {
-    "totalStep": 1000,  # earthquake record stpes
-    "fs": 50,  # sampling rate
-    "filename": 'NORTHR_SYL090',  # the earthquake file to load
-    "path": os.getcwd() + "\\earthquake record"  # earthquake record folder
-}
+
 measure_vector = np.array([[0, 1, 2, 3, 4, 5, 6, 7]])
 k0 = 1e9
-TrueResponse = h_measurement_eqn(mytrace[60][0][1,:], GMinput, 1, GMinput["totalStep"], measure_vector,
-                                 k0)
-stage = np.arange(63,64)
+
+stage = np.arange(15, 16)
 trueValues = np.ones((8, 1), ) * 1e9
-samples = np.array((1,2))
-rrms = plotRRMS(pickleFileName, stage,samples, trueValues, h_measurement_eqn, measure_vector, k0, GMinput)
+samples = np.arange(0,250)
+# rrms = plotRRMS(pickleFileName, stage, samples, trueValues, h_measurement_eqn, measure_vector, k0)
+# print(rrms)

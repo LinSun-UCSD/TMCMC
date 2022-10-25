@@ -7,20 +7,18 @@ def compute_RRMS(true, est):
     return RRMS
 
 
-def plotRRMS(pickleFileName, stages, samples, trueValues, h_measurement_eqn, measure_vector, k0, GMinput):
+def plotRRMS(pickleFileName, stages, samples, trueValues, h_measurement_eqn, measure_vector, k0,):
     with open(pickleFileName, 'rb') as handle1:
         mytrace = pickle.load(handle1)
-    TrueResponse = h_measurement_eqn(trueValues, GMinput, 1,
-                                     GMinput["totalStep"], measure_vector, k0)
+    TrueResponse = h_measurement_eqn(trueValues, measure_vector, k0)
     rrms = []
     for stage in stages:
-        tempRRMS = np.zeros((len(samples), TrueResponse.shape[1]))
+        tempRRMS = np.zeros((len(samples), ))
         for i in range(len(samples)):
             sample = samples[i]
-            tempResponse = h_measurement_eqn(mytrace[stage][0][sample, :], GMinput, 1,
-                                             GMinput["totalStep"], measure_vector, k0)
+            tempResponse = h_measurement_eqn(mytrace[stage][0][sample, :],  measure_vector, k0)
 
-            for j in range(tempResponse.shape[1]):
-                tempRRMS[i, j] = compute_RRMS(tempResponse[:, j], TrueResponse[:, j])
+
+            tempRRMS[i] = compute_RRMS(tempResponse[0,:], TrueResponse[0, :])
         rrms.append(tempRRMS)
     return rrms
