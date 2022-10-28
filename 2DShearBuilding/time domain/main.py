@@ -56,11 +56,6 @@ all_pars = [pdfs.TruncatedNormal(mu=prior_mean[0, i] * TrueUpdateParameterValues
 
 # include measurement noise
 ny = 8
-# for i in range(ny):
-#     all_pars.append(pdfs.HalfNormal(sig=0.01))
-
-# RMS_measurementNoise = 1 / 100
-# R = RMS_measurementNoise ** 2 * np.ones((1 * ny, 1))
 
 
 def log_likelihood(particle_num, theta):
