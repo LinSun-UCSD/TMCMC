@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 parallel_processing = 'multiprocessing'
 
 # measurement data:
+resultPath = os.getcwd() + "\\result"
 k0 = 1e9
 m0 = 625000
 # Parameters to update
@@ -47,19 +48,25 @@ for i in range(N):
 # noiseY[0] = np.array([[0.3860,0.3922,0.4157,0.3592,0.3615],[2.3614,2.5877,2.7070,2.3875,2.7272]])
 sigmaEigenvalues = 0.05 * trueY[0, :]
 sigmaEigenvectors = 0.05 * np.ones(trueY.shape[1], )
-
+np.save(resultPath + "\\TrueResponse.npy", trueY)
+np.save(resultPath + "\\NoisyTrueResponse.npy", noiseY)
+np.save(resultPath + "\\maxEig.npy", maxEig)
 # pollute the eigenvectors
 
 # number of particles (to approximate the posterior)
 Np = 500
 
 # prior distribution of parameters
-prior_mean = np.array([[1, 1, 1, 1, 1, 1, 1, 1]])
+prior_mean = np.array([[1.14, 1.32, 0.35, 0.95, 0.87, 1.235, 0.935, 0.85]])
 i = 0
 # all_pars = [pdfs.TruncatedNormal(mu=prior_mean[0, i] * k0,
 #                                  sig=0.3 * np.abs(prior_mean[0, i] * k0), low=0.00001, up=np.Inf)
 #             for i in range(8)]
-all_pars = [pdfs.Uniform(lower=0.6 * k0, upper=1.3 * k0)
+# all_pars = [pdfs.Uniform(lower=0.6 * k0, upper=1.3 * k0)
+#             for i in range(8)]
+TrueUpdateParameterValues = ParameterInfo["TrueParameterValues"][:, 0]
+all_pars = [pdfs.TruncatedNormal(mu=prior_mean[0, i] * TrueUpdateParameterValues[i],
+                                 sig=0.3 * np.abs(prior_mean[0, i] * TrueUpdateParameterValues[i]), low=1, up=np.Inf)
             for i in range(8)]
 
 

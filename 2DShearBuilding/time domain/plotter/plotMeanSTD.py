@@ -3,9 +3,7 @@ import matplotlib.pyplot as plt
 import pickle
 
 
-def plotMeanSTD(pickleFileName, thetaChoice, stageNum, trueValues):
-    with open(pickleFileName, 'rb') as handle1:
-        mytrace = pickle.load(handle1)
+def plotMeanSTD(mytrace, thetaChoice, stageNum, trueValues, xlabels, rows, cols):
     mean = []
     std = []
     cov = []
@@ -19,15 +17,20 @@ def plotMeanSTD(pickleFileName, thetaChoice, stageNum, trueValues):
 
     temp1 = np.array(mean) - np.array(std)
     temp2 = np.array(mean) + np.array(std)
+    plt.figure()
+    plt.rcParams["font.family"] = "times new roman"
+    plt.rcParams["font.size"] = 12
+    plt.figure(figsize=(12,6.5))
     for i in range(len(thetaChoice)):
-        plt.figure()
+        plt.subplot(rows,cols,i+1)
         upper = temp1[:, i] / trueValues[i]
         lower = temp2[:, i] / trueValues[i]
         plt.fill_between(stageNum, lower, upper, color=[0.75, 0.75, 0.75])
         plt.plot(stageNum, np.array(mean)[:, i]/trueValues[i], color="b")
         plt.grid("auto")
         plt.xlabel("Stage")
-        plt.ylabel("theta")
+        plt.axhline(y=1, color='r', linestyle='--', lw=1.5)
+        plt.ylabel(xlabels[i] + " /" + xlabels[i] + "$_{true}$")
         plt.xlim((stageNum[0], stageNum[-1]))
-    plt.show()
+    plt.tight_layout()
     return mean, std, cov

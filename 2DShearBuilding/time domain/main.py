@@ -13,16 +13,16 @@ import os as os
 from h_measurement_eqn.h_measurement_eqn import h_measurement_eqn
 from h_measurement_eqn.ismember import ismember
 from h_measurement_eqn.normalize import normalize
-import matplotlib.pyplot as plt
+
 
 # choose 'multiprocessing' for local workstation or 'mpi' for supercomputer
 parallel_processing = 'multiprocessing'
-
+resultPath = os.getcwd() + "\\result"
 # measurement data:
 g = 9.81  # gravity acceleration
 # ground motion input
 GMinput = {
-    "totalStep": 1000,  # earthquake record stpes
+    "totalStep": 2000,  # earthquake record step
     "fs": 50,  # sampling rate
     "filename": 'NORTHR_SYL090',  # the earthquake file to load
     "path": os.getcwd() + "\\earthquake record"  # earthquake record folder
@@ -42,8 +42,9 @@ measure_vector = np.array([[0, 1, 2, 3, 4, 5, 6, 7]])  # take first floor and to
 TrueResponse = h_measurement_eqn(ParameterInfo["TrueParameterValues"], GMinput, 1, GMinput["totalStep"], measure_vector,
                                  k0)
 TrueResponse, max = normalize(TrueResponse)
-NoisyTrueResponse = TrueResponse + np.random.randn(TrueResponse.shape[0], TrueResponse.shape[1]) * 0.01
-
+NoisyTrueResponse = TrueResponse + np.random.randn(TrueResponse.shape[0], TrueResponse.shape[1]) * 0.05
+np.save(resultPath + "\\TrueResponse.npy", TrueResponse)
+np.save(resultPath + "\\NoisyTrueResponse.npy", NoisyTrueResponse)
 # number of particles (to approximate the posterior)
 Np = 250
 
@@ -53,7 +54,7 @@ i = 0
 all_pars = [pdfs.TruncatedNormal(mu=prior_mean[0, i] * TrueUpdateParameterValues[i],
                                  sig=0.3 * np.abs(prior_mean[0, i] * TrueUpdateParameterValues[i]), low=1, up=np.Inf)
             for i in range(8)]
-
+all_pars.append(pdfs.HalfNormal(sig=0.055))
 # include measurement noise
 ny = 8
 
@@ -84,10 +85,10 @@ def log_likelihood(particle_num, theta):
         y[:, i] = y[:, i] / max[i]
     N, Ny = y.shape
     delta = NoisyTrueResponse - y
-    par_sigma_normalized = [0.01] * Ny
+    # par_sigma_normalized = [0.05] * Ny
     if y.shape != NoisyTrueResponse.shape:
         return -np.Inf
-    # par_sigma_normalized = theta[8:len(all_pars)].tolist()
+    par_sigma_normalized = theta[8:len(all_pars)].tolist() *Ny
     LL = -0.5 * N * Ny * np.log(2 * np.pi) - np.sum(N * np.log(par_sigma_normalized)) - np.sum(
         0.5 * (np.power(par_sigma_normalized, -2)) * np.sum(delta ** 2, axis=0))
     return LL
