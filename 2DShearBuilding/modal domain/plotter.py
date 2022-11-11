@@ -28,7 +28,7 @@ trueValues = np.ones((8, 1), ) * 1e9
 # plotData("result\\TrueResponse.npy", "result\\NoisyTrueResponse.npy", "result\\maxEig.npy")
 # plt.savefig("data.png", dpi=800)
 # plt.show()
-createAnimation(mytrace, trueValues, stages, ["k1", "k2", "k3"],[0, 1, 2])
+createAnimation(mytrace, trueValues, stages, thetaName ,[5, 6, 7])
 # plotScatterTwoTheta(mytrace, trueValues, stages, ["k1", "k2"])
 # plt.show()
 

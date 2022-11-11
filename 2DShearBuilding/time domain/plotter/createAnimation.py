@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import matplotlib.animation as animation
 import numpy as np
-from matplotlib.animation import FuncAnimation
 
 
 def createAnimation(mytrace, trueValues, stages, thetaName, thetachoice):
@@ -15,11 +13,9 @@ def createAnimation(mytrace, trueValues, stages, thetaName, thetachoice):
     ax.set_ylim3d(0.0e9, 2e9)
     ax.set_zlim3d(0.0e9, 2e9)
     sct, = ax.plot([], [], [], ".", color='b', alpha=0.2)
-    plt.plot(trueValues[1], trueValues[0], trueValues[0], 'ro', label='True')
-
+    plt.plot(trueValues[thetachoice[0]], trueValues[thetachoice[1]], trueValues[thetachoice[2]], 'ro', label='True')
     def animate(i):
         Sm = mytrace[i][0]
-        Wm = mytrace[i][2]
         sct.set_data(Sm[:, thetachoice[0]], Sm[:, thetachoice[1]])
         sct.set_3d_properties(Sm[:, thetachoice[2]])
         return sct,
@@ -30,10 +26,5 @@ def createAnimation(mytrace, trueValues, stages, thetaName, thetachoice):
     plt.legend()
     anim = animation.FuncAnimation(fig, animate, frames=len(stages),
                                    interval=1000, blit=True)
-
-    # saving to m4 using ffmpeg writer
-
-    # writervideo = animation.FFMpegWriter(fps=60)
     path = 'sample.gif'
-
     anim.save(path, writer='PillowWriter', fps=80)
